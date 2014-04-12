@@ -978,6 +978,9 @@ namespace PRoConEvents
 
     private void OnVoteInProgressEnd(object source, ElapsedEventArgs e)
     {
+      if (!voteIsInProgress)
+        return;
+
       if (voteType == "ban")
       {
         processMessage(22, null, votedVictim);
@@ -1004,13 +1007,15 @@ namespace PRoConEvents
       yesVotes = 0;
       noVotes = 0;
       alreadyVoted.Clear();
-      this.voteInProgress.Enabled = false;
-      this.voteProgressDisplay.Enabled = false;
+      this.voteInProgress.Stop();
+      this.voteProgressDisplay.Stop();
       voteIsInProgress = false;
     }
 
     private void OnVoteProgressDisplay(object source, ElapsedEventArgs e)
     {
+      if (!voteIsInProgress)
+        return;
       processMessage(28, null, yesVotes, noVotes);
       processMessage(32, null, (yesVotesNeeded - yesVotes).ToString(), voteType, votedVictim);
     }
@@ -1143,12 +1148,12 @@ namespace PRoConEvents
       getPlayerCount();
 
       this.voteInProgress = new System.Timers.Timer((voteDuration * 60) * 1000);
-      this.voteInProgress.Enabled = true;
       this.voteInProgress.Elapsed += new ElapsedEventHandler(OnVoteInProgressEnd);
+      this.voteInProgress.Start();
 
       this.voteProgressDisplay = new System.Timers.Timer(voteProgressNumber * 1000);
-      this.voteProgressDisplay.Enabled = true;
       this.voteProgressDisplay.Elapsed += new ElapsedEventHandler(OnVoteProgressDisplay);
+      this.voteProgressDisplay.Start();
 
       processMessage(50, null, banVictim, yesCommand[0], noCommand[0], playerBeingVotedReason[playerBeingVoted.IndexOf(banVictim)]);
     }
@@ -1164,12 +1169,12 @@ namespace PRoConEvents
       getPlayerCount();
 
       this.voteInProgress = new System.Timers.Timer((voteKickDuration * 60) * 1000);
-      this.voteInProgress.Enabled = true;
       this.voteInProgress.Elapsed += new ElapsedEventHandler(OnVoteInProgressEnd);
+      this.voteInProgress.Start();
 
       this.voteProgressDisplay = new System.Timers.Timer(voteKickProgressNumber * 1000);
-      this.voteProgressDisplay.Enabled = true;
       this.voteProgressDisplay.Elapsed += new ElapsedEventHandler(OnVoteProgressDisplay);
+      this.voteProgressDisplay.Start();
 
       processMessage(53, null, kickVictim, yesCommand[0], noCommand[0]);
     }
