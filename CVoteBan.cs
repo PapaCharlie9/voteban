@@ -203,7 +203,7 @@ namespace PRoConEvents
 
     public string GetPluginVersion()
     {
-      return "2.0.0.1";
+      return "2.0.0.2";
     }
 
     public string GetPluginAuthor()
@@ -1023,9 +1023,11 @@ namespace PRoConEvents
       yesVotes = 0;
       noVotes = 0;
       alreadyVoted.Clear();
-      this.voteInProgress.Stop();
-      this.voteProgressDisplay.Stop();
       voteIsInProgress = false;
+      this.voteInProgress.Stop();
+      this.voteInProgress.Dispose();
+      this.voteProgressDisplay.Stop();
+      this.voteProgressDisplay.Dispose();
     }
 
     private void OnVoteProgressDisplay(object source, ElapsedEventArgs e)
