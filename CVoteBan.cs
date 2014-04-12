@@ -274,7 +274,15 @@ namespace PRoConEvents
 
     public void OnPluginLoaded(string strHostName, string strPort, string strPRoConVersion)
     {
-      this.RegisterEvents(this.GetType().Name, "OnGlobalChat", "OnListPlayers", "OnRoundOver", "OnPunkbusterPlayerInfo", "OnPunkbusterEndPlayerInfo");
+      this.RegisterEvents(this.GetType().Name, 
+        "OnGlobalChat",
+        "OnTeamChat",
+        "OnSquadChat",
+        "OnListPlayers",
+        "OnRoundOver",
+        "OnPunkbusterPlayerInfo",
+        "OnPunkbusterEndPlayerInfo"
+      );
     }
 
     public void OnPluginEnable()
@@ -360,8 +368,7 @@ namespace PRoConEvents
       lstReturn.Add(new CPluginVariable("Vote Ban Progress Display Interval (in seconds)", voteProgressNumber.GetType(), voteProgressNumber));
       lstReturn.Add(new CPluginVariable("Ban Type", "enum.BanType(GUID|IP|Name|PB GUID)", banType));
       lstReturn.Add(new CPluginVariable("Ban Duration", "enum.BanDuration(Permanent|Temporary)", banDuration));
-      if (banDuration == "Temporary")
-        lstReturn.Add(new CPluginVariable("Ban Length (in minutes)", banLength.GetType(), banLength));
+      lstReturn.Add(new CPluginVariable("Ban Length (in minutes)", banLength.GetType(), banLength));
       lstReturn.Add(new CPluginVariable("Ban Reason Message", banDisplayReason.GetType(), banDisplayReason));
 
       lstReturn.Add(new CPluginVariable("Enable Vote Kick?", typeof(enumBoolYesNo), enableVoteKick));
@@ -379,8 +386,7 @@ namespace PRoConEvents
       lstReturn.Add(new CPluginVariable("In-Game Names", typeof(string[]), privilegedUsers.ToArray()));
       lstReturn.Add(new CPluginVariable("Clan Tags", typeof(string[]), privilegedTags.ToArray()));
       lstReturn.Add(new CPluginVariable("Action Taken", "enum.ActionTaken(None|Kill|Kick|Temporarily Ban|Permanently Ban)", whitelistActionTaken));
-      if (whitelistActionTaken == "Temporarily Ban")
-        lstReturn.Add(new CPluginVariable("Temporary Ban Length (in minutes)", whitelistBanLength.GetType(), whitelistBanLength));
+      lstReturn.Add(new CPluginVariable("Temporary Ban Length (in minutes)", whitelistBanLength.GetType(), whitelistBanLength));
 
       lstReturn.Add(new CPluginVariable("Vote Ban Commands", typeof(string[]), banCommand.ToArray()));
       lstReturn.Add(new CPluginVariable("Vote Kick Commands", typeof(string[]), kickCommand.ToArray()));
@@ -437,6 +443,7 @@ namespace PRoConEvents
       else if (strVariable.CompareTo("Ban Duration") == 0)
       {
         banDuration = strValue;
+        //this.ExecuteCommand("procon.protected.pluginconsole.write", "^3^b[Vote Ban BF3] ^n^0DEBUG: Ban Duration set to: ^b" + banDuration);
       }
       else if (strVariable.CompareTo("Ban Length (in minutes)") == 0)
       {
@@ -1047,7 +1054,9 @@ namespace PRoConEvents
         }
       }
 
+      this.voteInProgress.Stop();
       this.voteInProgress.Dispose();
+      this.voteProgressDisplay.Stop();
       this.voteProgressDisplay.Dispose();
 
       yesVotes = 0;
@@ -1094,7 +1103,9 @@ namespace PRoConEvents
         }
       }
 
+      this.voteInProgress.Stop();
       this.voteInProgress.Dispose();
+      this.voteProgressDisplay.Stop();
       this.voteProgressDisplay.Dispose();
 
       yesVotes = 0;
@@ -1337,6 +1348,15 @@ namespace PRoConEvents
           playerVoted = message.Trim();
         }
       }
+    }
+
+    public override void OnTeamChat(string speaker, string message, int teamId)
+    {
+        OnGlobalChat(speaker, message);
+    }
+    public override void OnSquadChat(string speaker, string message, int teamId, int squadId)
+    {
+        OnGlobalChat(speaker, message);
     }
 
     public override void OnGlobalChat(string speaker, string message)
@@ -1804,7 +1824,8 @@ namespace PRoConEvents
         if (playerInfo.SoldierName == votedVictim)
         {
           if (banDuration == "Permanent")
-            this.ExecuteCommand("procon.protected.send", "punkBuster.pb_sv_command", String.Format("pb_sv_ban \"{0}\" \"{1}\"", playerInfo.SoldierName, banDisplayReason.Replace("%player%", votedVictim).Replace("%reason%", voteReason)));
+            this.ExecuteCommand("procon.protected.send", "punkBuster.pb_sv_command", String.Format("pb_sv_banguid {0} \"{1}\" \"{2}\" \"{3}\"", votedVictimPbGuid, votedVictim, votedVictimIP, banDisplayReason.Replace("%player%", votedVictim).Replace("%reason%", voteReason)));
+            /* this.ExecuteCommand("procon.protected.send", "punkBuster.pb_sv_command", String.Format("pb_sv_ban \"{0}\" \"{1}\"", playerInfo.SoldierName, banDisplayReason.Replace("%player%", votedVictim).Replace("%reason%", voteReason))); */
           else if (banDuration == "Temporary")
             this.ExecuteCommand("procon.protected.send", "punkBuster.pb_sv_command", String.Format("pb_sv_kick \"{0}\" {1} \"{2}\"", playerInfo.SoldierName, banLength, banDisplayReason.Replace("%player%", votedVictim).Replace("%reason%", voteReason)));
 
