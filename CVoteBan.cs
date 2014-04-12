@@ -203,7 +203,7 @@ namespace PRoConEvents
 
     public string GetPluginVersion()
     {
-      return "2.0.0.2";
+      return "2.0.0.3";
     }
 
     public string GetPluginAuthor()
@@ -1020,13 +1020,15 @@ namespace PRoConEvents
         }
       }
 
+      this.voteInProgress.Stop();
+      this.voteProgressDisplay.Stop();
+
       yesVotes = 0;
       noVotes = 0;
       alreadyVoted.Clear();
       voteIsInProgress = false;
-      this.voteInProgress.Stop();
+
       this.voteInProgress.Dispose();
-      this.voteProgressDisplay.Stop();
       this.voteProgressDisplay.Dispose();
     }
 
@@ -1058,14 +1060,15 @@ namespace PRoConEvents
       }
 
       this.voteInProgress.Stop();
-      this.voteInProgress.Dispose();
       this.voteProgressDisplay.Stop();
-      this.voteProgressDisplay.Dispose();
 
       yesVotes = 0;
       noVotes = 0;
       alreadyVoted.Clear();
       voteIsInProgress = false;
+
+      this.voteInProgress.Dispose();
+      this.voteProgressDisplay.Dispose();
 
       processMessage(35, null, speaker, voteType, votedVictim);
     }
@@ -1107,14 +1110,15 @@ namespace PRoConEvents
       }
 
       this.voteInProgress.Stop();
-      this.voteInProgress.Dispose();
       this.voteProgressDisplay.Stop();
-      this.voteProgressDisplay.Dispose();
 
       yesVotes = 0;
       noVotes = 0;
       alreadyVoted.Clear();
       voteIsInProgress = false;
+
+      this.voteInProgress.Dispose();
+      this.voteProgressDisplay.Dispose();
     }
 
     private void voteMainHandler(string speaker, string message)
