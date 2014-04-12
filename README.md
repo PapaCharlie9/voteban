@@ -9,6 +9,6 @@ Fixes for CVoteBanBF3
 
 * Changed name to Vote Ban
 
-* Changed version to 2.0.0.1
+* Changed version to 2.0.0.2
 
 
