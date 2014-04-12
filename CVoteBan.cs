@@ -105,6 +105,7 @@ namespace PRoConEvents
     private bool kickingPlayer;
     private bool processingVote;
     private bool foundvotedVictim;
+    private bool pluginEnabled;
 
     private System.Timers.Timer voteInProgress;
     private System.Timers.Timer voteProgressDisplay;
@@ -192,6 +193,7 @@ namespace PRoConEvents
       this.kickingPlayer = false;
       this.processingVote = false;
       this.foundvotedVictim = false;
+      this.pluginEnabled = false;
     }
 
     public string GetPluginName()
@@ -277,11 +279,17 @@ namespace PRoConEvents
 
     public void OnPluginEnable()
     {
+      this.pluginEnabled = true;
       this.ExecuteCommand("procon.protected.pluginconsole.write", "^bVote Ban BF3 ^2Enabled!");
     }
 
     public void OnPluginDisable()
     {
+      this.pluginEnabled = false;
+      if (voteIsInProgress)
+      {
+        cancelVote("VoteBan");
+      }
       this.ExecuteCommand("procon.protected.pluginconsole.write", "^bVote Ban BF3 ^1Disabled =(");
     }
 
@@ -978,7 +986,7 @@ namespace PRoConEvents
 
     private void OnVoteInProgressEnd(object source, ElapsedEventArgs e)
     {
-      if (!voteIsInProgress)
+      if (!voteIsInProgress || !pluginEnabled)
         return;
 
       if (voteType == "ban")
@@ -1014,7 +1022,7 @@ namespace PRoConEvents
 
     private void OnVoteProgressDisplay(object source, ElapsedEventArgs e)
     {
-      if (!voteIsInProgress)
+      if (!voteIsInProgress || !pluginEnabled)
         return;
       processMessage(28, null, yesVotes, noVotes);
       processMessage(32, null, (yesVotesNeeded - yesVotes).ToString(), voteType, votedVictim);
