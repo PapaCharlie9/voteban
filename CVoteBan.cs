@@ -21,7 +21,7 @@ using PRoCon.Core.Maps;
 
 namespace PRoConEvents
 {
-  public class CVoteBanBF3 : PRoConPluginAPI, IPRoConPluginInterface
+  public class CVoteBan : PRoConPluginAPI, IPRoConPluginInterface
   {
     private enumBoolYesNo enableVoteBan;
     private int voteBanThreshold;
@@ -111,7 +111,7 @@ namespace PRoConEvents
 
     private BattlelogClient blClient;
 
-    public CVoteBanBF3()
+    public CVoteBan()
     {
       this.enableVoteBan = enumBoolYesNo.No;
       this.voteBanThreshold = 0;
@@ -196,12 +196,12 @@ namespace PRoConEvents
 
     public string GetPluginName()
     {
-      return "Vote Ban BF3";
+      return "Vote Ban";
     }
 
     public string GetPluginVersion()
     {
-      return "1.5.0";
+      return "2.0.0.1";
     }
 
     public string GetPluginAuthor()
