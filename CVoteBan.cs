@@ -281,7 +281,8 @@ namespace PRoConEvents
         "OnListPlayers",
         "OnRoundOver",
         "OnPunkbusterPlayerInfo",
-        "OnPunkbusterEndPlayerInfo"
+        "OnPunkbusterEndPlayerInfo",
+        "OnPlayerLeft"
       );
     }
 
@@ -296,7 +297,7 @@ namespace PRoConEvents
       this.pluginEnabled = false;
       if (voteIsInProgress)
       {
-        cancelVote("VoteBan");
+        cancelVote("PLUGIN-Disabled");
       }
       this.ExecuteCommand("procon.protected.pluginconsole.write", "^bVote Ban BF3 ^1Disabled =(");
     }
@@ -642,7 +643,7 @@ namespace PRoConEvents
       inGameMessages.Add("say \"%1% more Yes votes needed to %2% %3% ...\" all");
       inGameMessages.Add("---------- %1% = admin canceling vote %2% = vote type (kick or ban) %3% = voted player ----------");
       inGameMessages.Add("----- WARNING! No relevant player for 'player' directive -----");
-      inGameMessages.Add("yell \"%1% has canceled the vote to %2% %3%!\" all");
+      inGameMessages.Add("yell \"%1% has canceled the vote to %2% %3%!\" all"); // 35
       inGameMessages.Add("---------- %1% = voted player %2% = reason for vote ban ----------");
       inGameMessages.Add("----- WARNING! No relevant player for 'player' directive -----");
       inGameMessages.Add("yell \"Vote Ban successful! Banning %1% for %2%...\" all");
@@ -1352,15 +1353,21 @@ namespace PRoConEvents
 
     public override void OnTeamChat(string speaker, string message, int teamId)
     {
+        if (!pluginEnabled)
+            return;
         OnGlobalChat(speaker, message);
     }
     public override void OnSquadChat(string speaker, string message, int teamId, int squadId)
     {
+        if (!pluginEnabled)
+            return;
         OnGlobalChat(speaker, message);
     }
 
     public override void OnGlobalChat(string speaker, string message)
     {
+      if (!pluginEnabled)
+        return;
       if (isVoteBan(message) && enableVoteBan == enumBoolYesNo.Yes)
       {
         if (voteBanThreshold > 0)
@@ -1520,6 +1527,8 @@ namespace PRoConEvents
 
     public override void OnListPlayers(List<CPlayerInfo> players, CPlayerSubset subset)
     {
+      if (!pluginEnabled)
+        return;
       if (needVotedVictimInfo && banType == "GUID")
       {
         for (int i = 0; i < players.Count; i++)
@@ -1781,8 +1790,19 @@ namespace PRoConEvents
       hackCryCount = 0;
     }
 
+    public override void OnPlayerLeft(CPlayerInfo playerInfo) {
+        if (!pluginEnabled || !voteIsInProgress)
+            return;
+        if (voteType == "kick" && playerInfo.SoldierName == votedVictim)
+        {
+            cancelVote("PLUGIN-Player-Left");
+        }
+    }
+
     public override void OnPunkbusterPlayerInfo(CPunkbusterInfo playerInfo)
     {
+      if (!pluginEnabled)
+        return;
       if (needVotedVictimInfo && banType == "IP" || banType == "PB GUID")
       {
         if (playerInfo.SoldierName == votedVictim)
@@ -1839,6 +1859,8 @@ namespace PRoConEvents
 
     public override void OnPunkbusterEndPlayerInfo()
     {
+      if (!pluginEnabled)
+        return;
       if (!foundvotedVictim && banningPlayerByIP || banningPlayerByPbGuid)
       {
         if (banningPlayerByIP)
