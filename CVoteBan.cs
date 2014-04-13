@@ -213,7 +213,7 @@ namespace PRoConEvents
 
     public string GetPluginWebsite()
     {
-      return "www.phogue.net/forumvb/showthread.php?3582-Vote-Ban-BF3-%280.5.0-01-10-2011%29-BF3";
+      return "www.phogue.net/forumvb/showthread.php?3582";
     }
 
     public string GetPluginDescription()
@@ -290,7 +290,7 @@ namespace PRoConEvents
     public void OnPluginEnable()
     {
       this.pluginEnabled = true;
-      this.ExecuteCommand("procon.protected.pluginconsole.write", "^bVote Ban BF3 ^2Enabled!");
+      this.ExecuteCommand("procon.protected.pluginconsole.write", "^bVote Ban ^2Enabled!");
     }
 
     public void OnPluginDisable()
@@ -302,7 +302,7 @@ namespace PRoConEvents
         cancelVote("PLUGIN-Disabled");
       }
       OnRoundOver(0); // Reset everything, so on next enable make everything like the class was just constructed
-      this.ExecuteCommand("procon.protected.pluginconsole.write", "^bVote Ban BF3 ^1Disabled =(");
+      this.ExecuteCommand("procon.protected.pluginconsole.write", "^bVote Ban ^1Disabled =(");
     }
 
     public List<CPluginVariable> GetDisplayPluginVariables()
@@ -447,7 +447,7 @@ namespace PRoConEvents
       else if (strVariable.CompareTo("Ban Duration") == 0)
       {
         banDuration = strValue;
-        //this.ExecuteCommand("procon.protected.pluginconsole.write", "^3^b[Vote Ban BF3] ^n^0DEBUG: Ban Duration set to: ^b" + banDuration);
+        //this.ExecuteCommand("procon.protected.pluginconsole.write", "^3^b[Vote Ban] ^n^0DEBUG: Ban Duration set to: ^b" + banDuration);
       }
       else if (strVariable.CompareTo("Ban Length (in minutes)") == 0)
       {
@@ -591,7 +591,7 @@ namespace PRoConEvents
         {
           inGameMessages.Clear();
           initInGameMessages();
-          this.ExecuteCommand("procon.protected.pluginconsole.write", "^3^b[Vote Ban BF3] ^n^0Message list reset to default!");
+          this.ExecuteCommand("procon.protected.pluginconsole.write", "^3^b[Vote Ban] ^n^0Message list reset to default!");
         }
       }
       else if (strVariable.CompareTo("Message List") == 0)
@@ -921,6 +921,10 @@ namespace PRoConEvents
 
     private bool hasTriggerWord(string message)
     {
+      // Don't trigger if trigger word is in a voteban or votekick reason
+      if (isVoteBan(message) || isVoteKick(message))
+        return false;
+
       if (message.Contains("hack"))
         return true;
 
@@ -1617,7 +1621,7 @@ namespace PRoConEvents
 
             this.ExecuteCommand("procon.protected.send", "banList.save");
             this.ExecuteCommand("procon.protected.send", "banList.list");
-            this.ExecuteCommand("procon.protected.pluginconsole.write", "^3^b[Vote Ban BF3] ^n^0Player ^2" + votedVictim + " ^0has been ^8BANNED ^0by ^5GUID^0!");
+            this.ExecuteCommand("procon.protected.pluginconsole.write", "^3^b[Vote Ban] ^n^0Player ^2" + votedVictim + " ^0has been ^8BANNED ^0by ^5GUID^0!");
 
             foundvotedVictim = true;
           }
@@ -1632,7 +1636,7 @@ namespace PRoConEvents
 
           this.ExecuteCommand("procon.protected.send", "banList.save");
           this.ExecuteCommand("procon.protected.send", "banList.list");
-          this.ExecuteCommand("procon.protected.pluginconsole.write", "^3^b[Vote Ban BF3] ^n^0Player ^2" + votedVictim + " ^0has been ^8BANNED ^0by ^5GUID^0!");
+          this.ExecuteCommand("procon.protected.pluginconsole.write", "^3^b[Vote Ban] ^n^0Player ^2" + votedVictim + " ^0has been ^8BANNED ^0by ^5GUID^0!");
         }
 
         banningPlayerByGUID = false;
@@ -1647,7 +1651,7 @@ namespace PRoConEvents
 
         this.ExecuteCommand("procon.protected.send", "banList.save");
         this.ExecuteCommand("procon.protected.send", "banList.list");
-        this.ExecuteCommand("procon.protected.pluginconsole.write", "^3^b[Vote Ban BF3] ^n^0Player ^2" + votedVictim + " ^0has been ^8BANNED ^0by ^5Name^0!");
+        this.ExecuteCommand("procon.protected.pluginconsole.write", "^3^b[Vote Ban] ^n^0Player ^2" + votedVictim + " ^0has been ^8BANNED ^0by ^5Name^0!");
 
         banningPlayerByName = false;
       }
@@ -1655,7 +1659,7 @@ namespace PRoConEvents
       if (kickingPlayer)
       {
         this.ExecuteCommand("procon.protected.send", "admin.kickPlayer", votedVictim, "Kicked by player Vote Kick!");
-        this.ExecuteCommand("procon.protected.pluginconsole.write", "^3^b[Vote Ban BF3] ^n^0Player ^2" + votedVictim + " ^0has been ^8KICKED^0!");
+        this.ExecuteCommand("procon.protected.pluginconsole.write", "^3^b[Vote Ban] ^n^0Player ^2" + votedVictim + " ^0has been ^8KICKED^0!");
 
         kickingPlayer = false;
       }
@@ -1864,7 +1868,7 @@ namespace PRoConEvents
 
           this.ExecuteCommand("procon.protected.send", "banList.save");
           this.ExecuteCommand("procon.protected.send", "banList.list");
-          this.ExecuteCommand("procon.protected.pluginconsole.write", "^3^b[Vote Ban BF3] ^n^0Player ^2" + votedVictim + " ^0has been ^8BANNED ^0by ^5IP^0!");
+          this.ExecuteCommand("procon.protected.pluginconsole.write", "^3^b[Vote Ban] ^n^0Player ^2" + votedVictim + " ^0has been ^8BANNED ^0by ^5IP^0!");
 
           foundvotedVictim = true;
           banningPlayerByIP = false;
@@ -1881,7 +1885,7 @@ namespace PRoConEvents
           else if (banDuration == "Temporary")
             this.ExecuteCommand("procon.protected.send", "punkBuster.pb_sv_command", String.Format("pb_sv_kick \"{0}\" {1} \"{2}\"", playerInfo.SoldierName, banLength, banDisplayReason.Replace("%player%", votedVictim).Replace("%reason%", voteReason)));
 
-          this.ExecuteCommand("procon.protected.pluginconsole.write", "^3^b[Vote Ban BF3] ^n^0Player ^2" + votedVictim + " ^0has been ^8BANNED ^0by ^5PB GUID^0!");
+          this.ExecuteCommand("procon.protected.pluginconsole.write", "^3^b[Vote Ban] ^n^0Player ^2" + votedVictim + " ^0has been ^8BANNED ^0by ^5PB GUID^0!");
 
           foundvotedVictim = true;
           banningPlayerByPbGuid = false;
@@ -1904,7 +1908,7 @@ namespace PRoConEvents
 
           this.ExecuteCommand("procon.protected.send", "banList.save");
           this.ExecuteCommand("procon.protected.send", "banList.list");
-          this.ExecuteCommand("procon.protected.pluginconsole.write", "^3^b[Vote Ban BF3] ^n^0Player ^2" + votedVictim + " ^0has been ^8BANNED ^0by ^5IP^0!");
+          this.ExecuteCommand("procon.protected.pluginconsole.write", "^3^b[Vote Ban] ^n^0Player ^2" + votedVictim + " ^0has been ^8BANNED ^0by ^5IP^0!");
 
           banningPlayerByIP = false;
         }
@@ -1912,7 +1916,7 @@ namespace PRoConEvents
         {
           this.ExecuteCommand("procon.protected.send", "punkBuster.pb_sv_command", String.Format("pb_sv_banguid {0} \"{1}\" \"{2}\" \"{3}\"", votedVictimPbGuid, votedVictim, votedVictimIP, banDisplayReason.Replace("%player%", votedVictim).Replace("%reason%", voteReason)));
 
-          this.ExecuteCommand("procon.protected.pluginconsole.write", "^3^b[Vote Ban BF3] ^n^0Player ^2" + votedVictim + " ^0has been ^8BANNED ^0by ^5PB GUID^0!");
+          this.ExecuteCommand("procon.protected.pluginconsole.write", "^3^b[Vote Ban] ^n^0Player ^2" + votedVictim + " ^0has been ^8BANNED ^0by ^5PB GUID^0!");
 
           banningPlayerByPbGuid = false;
         }
