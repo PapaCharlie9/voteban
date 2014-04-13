@@ -203,7 +203,7 @@ namespace PRoConEvents
 
     public string GetPluginVersion()
     {
-      return "2.0.0.3";
+      return "2.0.0.4";
     }
 
     public string GetPluginAuthor()
@@ -282,7 +282,8 @@ namespace PRoConEvents
         "OnRoundOver",
         "OnPunkbusterPlayerInfo",
         "OnPunkbusterEndPlayerInfo",
-        "OnPlayerLeft"
+        "OnPlayerLeft",
+        "OnLevelLoaded"
       );
     }
 
@@ -295,10 +296,12 @@ namespace PRoConEvents
     public void OnPluginDisable()
     {
       this.pluginEnabled = false;
+      // If a vote is in progress, cancel it
       if (voteIsInProgress)
       {
         cancelVote("PLUGIN-Disabled");
       }
+      OnRoundOver(0); // Reset everything, so on next enable make everything like the class was just constructed
       this.ExecuteCommand("procon.protected.pluginconsole.write", "^bVote Ban BF3 ^1Disabled =(");
     }
 
@@ -618,7 +621,7 @@ namespace PRoConEvents
       inGameMessages.Add("///// Format: messagetype \"message\" directive seconds(yell only)    /////");
       inGameMessages.Add("///// messagetype = 'say' or 'yell'                                                        /////");
       inGameMessages.Add("///// message = your message (in quotes)                                          /////");
-      inGameMessages.Add("///// directive = 'all' or 'player' (sends to relevant player)                    /////");
+      inGameMessages.Add("///// directive = 'all' or 'player' (sends to relevant player)                    /////"); // 10
       inGameMessages.Add("///// seconds = number of seconds for yell message type to stay up /////");
       inGameMessages.Add("/////////////////////////////////////////////////////////////////////");
       inGameMessages.Add("/////////////////////////////////////////////////////////////////////");
@@ -628,7 +631,7 @@ namespace PRoConEvents
       inGameMessages.Add("say \"Player %1% has been killed as a result of attempting a vote to %2% immune player %3%!\" all");
       inGameMessages.Add("say \"Player %1% has been kicked as a result of attempting a vote to %2% immune player %3%!\" all");
       inGameMessages.Add("say \"Player %1% has been banned as a result of attempting a vote to %2% immune player %3%!\" all");
-      inGameMessages.Add("---------- %1% = voted player ----------");
+      inGameMessages.Add("---------- %1% = voted player ----------"); // 20
       inGameMessages.Add("----- WARNING! No relevant player for 'player' directive -----");
       inGameMessages.Add("yell \"The vote to ban %1% has expired!\" all");
       inGameMessages.Add("yell \"The vote to kick %1% has expired!\" all");
@@ -638,7 +641,7 @@ namespace PRoConEvents
       inGameMessages.Add("say \"The summary of the vote was - Yes Votes: %1% No Votes: %2%\" all");
       inGameMessages.Add("say \"Vote Progress - Yes Votes: %1% No Votes: %2%\" all");
       inGameMessages.Add("---------- %1% = remaining yes votes needed %2% = vote type (kick or ban) %3% = voted player ----------");
-      inGameMessages.Add("----- WARNING! No relevant player for 'player' directive -----");
+      inGameMessages.Add("----- WARNING! No relevant player for 'player' directive -----"); // 30
       inGameMessages.Add("----- WARNING! Don't set this next message AND the previous message to yell as they happen simultaneously! -----");
       inGameMessages.Add("say \"%1% more Yes votes needed to %2% %3% ...\" all");
       inGameMessages.Add("---------- %1% = admin canceling vote %2% = vote type (kick or ban) %3% = voted player ----------");
@@ -648,7 +651,7 @@ namespace PRoConEvents
       inGameMessages.Add("----- WARNING! No relevant player for 'player' directive -----");
       inGameMessages.Add("yell \"Vote Ban successful! Banning %1% for %2%...\" all");
       inGameMessages.Add("---------- %1% = voted player ----------");
-      inGameMessages.Add("----- WARNING! No relevant player for 'player' directive -----");
+      inGameMessages.Add("----- WARNING! No relevant player for 'player' directive -----"); // 40
       inGameMessages.Add("yell \"Vote Kick successful! Kicking %1%...\" all");
       inGameMessages.Add("---------- %1% = voter ----------");
       inGameMessages.Add("say \"Your vote has been registered as YES!\" player");
@@ -658,7 +661,7 @@ namespace PRoConEvents
       inGameMessages.Add("say \"There is no vote in progress! Type %1% <player_name> or %2% <player_name> to put in a request.\" player");
       inGameMessages.Add("---------- %1% = voted player %2% = yes command %3% = no command %4% = reason for vote ban ----------");
       inGameMessages.Add("----- WARNING! No relevant player for 'player' directive -----");
-      inGameMessages.Add("yell \"The vote to ban %1% for \"%4%\" has COMMENCED! Type %2% or %3% in chat to vote!\" all 30");
+      inGameMessages.Add("yell \"The vote to ban %1% for \"%4%\" has COMMENCED! Type %2% or %3% in chat to vote!\" all 30"); // 50
       inGameMessages.Add("---------- %1% = voted player %2% = yes command %3% = no command ----------");
       inGameMessages.Add("----- WARNING! No relevant player for 'player' directive -----");
       inGameMessages.Add("yell \"The vote to kick %1% has COMMENCED! Type %2% or %3% in chat to vote!\" all 30");
@@ -668,7 +671,7 @@ namespace PRoConEvents
       inGameMessages.Add("say \"%1% has ALREADY put in a request to initiate a Vote Ban on %2%!\" all");
       inGameMessages.Add("---------- %1% = voter %2% = vote kick command %3% = voted player %4% = remaining votes needed ----------");
       inGameMessages.Add("say \"%1% has put in a %2% request to initiate a Vote Kick on %3%! %4% more needed!\" all");
-      inGameMessages.Add("---------- %1% = voter %2% = voted player ----------");
+      inGameMessages.Add("---------- %1% = voter %2% = voted player ----------"); // 60
       inGameMessages.Add("say \"%1% has ALREADY put in a request to initiate a Vote Kick on %2%!\" all");
       inGameMessages.Add("---------- %1% = voter ----------");
       inGameMessages.Add("say \"%1% - A vote is already in progress...\" all");
@@ -678,7 +681,7 @@ namespace PRoConEvents
       inGameMessages.Add("---------- %1% = voter %2% = voted player ----------");
       inGameMessages.Add("say \"%1% - Player %2% is protected from being Vote Banned!\" all");
       inGameMessages.Add("---------- %1% = voter %2% = vote ban command ----------");
-      inGameMessages.Add("say \"%1% - The first %2% request must include the reason... %2% <player_name> <reason>\" all");
+      inGameMessages.Add("say \"%1% - The first %2% request must include the reason... %2% <player_name> <reason>\" all"); // 70
       inGameMessages.Add("---------- %1% = voter -----");
       inGameMessages.Add("say \"%1% - You have declined the suggested player name...\" player");
       inGameMessages.Add("---------- %1% = voter %2% = voted player ----------");
@@ -688,7 +691,7 @@ namespace PRoConEvents
       inGameMessages.Add("say \"%1% - There is no vote in progress to cancel!\" player");
       inGameMessages.Add("---------- %1% = voter %2% = Vote Ban player count threshold ----------");
       inGameMessages.Add("say \"Vote Ban is currently disabled! There must be at least %2% players for Vote Ban to be enabled.\" all");
-      inGameMessages.Add("---------- %1% = voter %2% = Vote Kick player count threshold ----------");
+      inGameMessages.Add("---------- %1% = voter %2% = Vote Kick player count threshold ----------"); // 80
       inGameMessages.Add("say \"Vote Kick is currently disabled! There must be at least %2% players for Vote Kick to be enabled.\" all");
     }
 
@@ -1793,7 +1796,30 @@ namespace PRoConEvents
       awaitedConfirmationPlayerForKick.Clear();
       suggestedPlayerNameForKick.Clear();
 
-      hackCryCount = 0;
+      alreadyVoted.Clear();
+
+      // Reset all counters
+      this.yesVotes = 0;
+      this.noVotes = 0;
+      this.hackCryCount = 0;
+
+      // Reset all flags
+      this.voteIsInProgress = false;
+      this.needPlayerCount = false;
+      this.needPlayerCountForThreshold = false;
+      this.needVotedVictimInfo = false;
+      this.banningPlayerByGUID = false;
+      this.banningPlayerByIP = false;
+      this.banningPlayerByName = false;
+      this.banningPlayerByPbGuid = false;
+      this.kickingPlayer = false;
+      this.processingVote = false;
+      this.foundvotedVictim = false;
+    }
+
+    public override void OnLevelLoaded(String mapFileName, String Gamemode, int roundsPlayed, int roundsTotal)
+    {
+        OnRoundOver(0); // reset all when level loads, handles mapList.runNextRound better
     }
 
     public override void OnPlayerLeft(CPlayerInfo playerInfo) {
