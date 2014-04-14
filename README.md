@@ -9,6 +9,8 @@ Fixes for CVoteBanBF3
 
 * Changed name to Vote Ban
 
-* Changed version to 2.0.0.4
+* Changed version to 2.0.1.0
+
+* See Issues (https://github.com/PapaCharlie9/voteban/issues?state=open)
 
 
